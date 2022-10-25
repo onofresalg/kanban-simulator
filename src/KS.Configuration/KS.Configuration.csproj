@@ -7,4 +7,23 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="EventBus\**" />
+    <Compile Remove="Interfaces\**" />
+    <Compile Remove="Messages\**" />
+    <Compile Remove="Servers\**" />
+    <EmbeddedResource Remove="EventBus\**" />
+    <EmbeddedResource Remove="Interfaces\**" />
+    <EmbeddedResource Remove="Messages\**" />
+    <EmbeddedResource Remove="Servers\**" />
+    <None Remove="EventBus\**" />
+    <None Remove="Interfaces\**" />
+    <None Remove="Messages\**" />
+    <None Remove="Servers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KS.Presentation\KS.Presentation.csproj" />
+  </ItemGroup>
+
 </Project>

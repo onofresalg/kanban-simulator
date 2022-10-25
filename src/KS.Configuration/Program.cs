@@ -1,2 +1,8 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using KS.Presentation;
+
+var console = new Presentation(args, services =>
+{
+
+});
+
+await console.RunAsync();
