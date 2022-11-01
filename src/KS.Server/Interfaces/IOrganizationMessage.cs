@@ -2,5 +2,5 @@
 
 public interface IOrganizationMessage<T> : IMessage
 {
-    public T Message { get; set; }
+    public T Message { get; }
 }

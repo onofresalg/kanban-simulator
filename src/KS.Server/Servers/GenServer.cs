@@ -3,20 +3,20 @@ using KS.Server.Interfaces;
 
 namespace KS.Server.Servers;
 
-public abstract class GenServer<T> : IGenServer where T : GenEntity
+public abstract class GenServer<Entity> : IGenServer where Entity : GenEntity
 {
     public Guid Id { get; }
     protected Queue<IMessage> _messages;
     protected Dictionary<Type, int> _messageTypes;
-    protected Dictionary<Guid, T> _states;
     protected EventBus _eventBus;
 
     public GenServer(EventBus eventBus)
     {
         _eventBus = eventBus;
-        //Id = Guid.NewGuid();
+        _messages = new Queue<IMessage>();
+        Id = Guid.NewGuid();
         SetMessagesDictionary();
-        Start().Wait();
+        Start();
     }
 
     public virtual async Task ReceiveAsync(IMessage message)
@@ -31,14 +31,17 @@ public abstract class GenServer<T> : IGenServer where T : GenEntity
     {
         //TODO: Verificar Tail Recursion
         //TODO: Otimizar o thread sleep
-        while (true)
+        return Task.Factory.StartNew(() =>
         {
-            if (_messages.Count > 0)
+            while (true)
             {
-                SetExecution(_messages.Dequeue());
+                if (_messages.Count > 0)
+                {
+                    SetExecution(_messages.Dequeue());
+                }
+                Thread.Sleep(1000);
             }
-            Thread.Sleep(1000);
-        }
+        });
     }
 
     protected abstract void SetExecution(IMessage message);

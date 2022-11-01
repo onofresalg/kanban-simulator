@@ -1,8 +1,8 @@
+using KS.Domain.Entities;
 using KS.Server;
-using KS.Server.Interfaces;
 using KS.Server.Messages;
 using KS.Server.Servers;
-using Moq;
+using KS.Test.Server.Fake;
 
 namespace KS.Test.Server.Servers;
 
@@ -13,15 +13,27 @@ public class OrganizationsGenServerTest
     {
         var eventBus = new EventBus();
         var genServer = new OrganizationsServer(eventBus);
+        var genServerFake = new OrganizationsServerFake(eventBus);
         eventBus.Register(genServer);
-
-        var genServerMock = new Mock<IGenServer>();
-        genServerMock.Setup(mock => mock.ReceiveAsync(It.IsAny<RetrieveAllOrganizations>()));
+        eventBus.Register(genServerFake);
 
         var message = new RetrieveAllOrganizations()
         {
-            From = Guid.NewGuid()
+            From = genServerFake.Id
         };
-        genServer.ReceiveAsync();
+
+        eventBus.Communicate(genServer.Id, message).Wait();
+
+        genServer.ReceiveAsync(message);
+        Thread.Sleep(3000);
+
+        var retrieved = new RetrievedOrganizations
+        {
+            From = genServer.Id,
+            Organizations = new List<Organization>()
+        };
+
+        Assert.Equal(genServerFake.AssertedMessage.From, retrieved.From);
+        Assert.Equal(((RetrievedOrganizations)genServerFake.AssertedMessage).Organizations, retrieved.Organizations);
     }
 }

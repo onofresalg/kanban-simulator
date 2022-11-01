@@ -6,6 +6,8 @@ namespace KS.Server.Servers;
 
 public class OrganizationsServer : GenServer<Organization>
 {
+    private Dictionary<Guid, Organization> _states;
+
     public OrganizationsServer(EventBus eventBus)
         : this(new Dictionary<Guid, Organization>(), eventBus) { }
 
@@ -20,7 +22,8 @@ public class OrganizationsServer : GenServer<Organization>
         _messageTypes = new Dictionary<Type, int>
         {
             { typeof(CreateOrganization), 0 },
-            { typeof(DeleteOrganization), 1 }
+            { typeof(DeleteOrganization), 1 },
+            { typeof(RetrieveAllOrganizations), 2 }
         };
     }
 

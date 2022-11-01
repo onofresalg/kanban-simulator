@@ -2,5 +2,5 @@
 
 public interface IMessage
 {
-    public Guid From { get; set; }
+    public Guid From { get; init; }
 }
