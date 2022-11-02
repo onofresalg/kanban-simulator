@@ -15,6 +15,7 @@ public class OrganizationServer : GenServer<Organization>
         : base(eventBus)
     {
         _states = states;
+        Id = _states.Id;
     }
 
     protected override void SetExecution(IMessage message)

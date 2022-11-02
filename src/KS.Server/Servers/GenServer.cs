@@ -5,7 +5,7 @@ namespace KS.Server.Servers;
 
 public abstract class GenServer<Entity> : IGenServer where Entity : GenEntity
 {
-    public Guid Id { get; }
+    public Guid Id { get; protected set; }
     protected Queue<IMessage> _messages;
     protected Dictionary<Type, int> _messageTypes;
     protected EventBus _eventBus;

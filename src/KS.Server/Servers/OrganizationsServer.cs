@@ -50,26 +50,40 @@ public class OrganizationsServer : GenServer<Organization>
         }
     }
 
-    private async void Execute(CreateOrganization message)
+    private Task Execute(CreateOrganization message)
     {
-        _states.Add(message.Message.Id, message.Message);
-        //TODO: Devolver a resposta de sucesso ou erro em caso de atributos iguais ou mesmo GUID
+        IMessage result;
+        if (FindByName(message.Message.Name) == null) {
+            _states.Add(message.Message.Id, message.Message);
+            var server = new OrganizationServer(message.Message, _eventBus);
+            _eventBus.Register(server);
+            result = new CreatedOrganization{Organization = message.Message, From = Id};
+        } else {
+            result = new ExistsOrganization{Error = new Exception("Organization already exists"), From = Id};
+        }
+
+        return _eventBus.Communicate(message.From, result);
     }
 
-    private async void Execute(DeleteOrganization message)
+    private void Execute(DeleteOrganization message)
     {
         _states.Remove(message.Message);
         //TODO: Devolver a resposta de sucesso/erro para o from
     }
 
-    private async void Execute(RetrieveAllOrganizations message)
+    private Task Execute(RetrieveAllOrganizations message)
     {
         var newMessage = new RetrievedOrganizations()
         {
             From = Id,
             Organizations = _states.Select(org => org.Value).ToList()
         };
-        _eventBus.Communicate(message.From, newMessage);
+        return _eventBus.Communicate(message.From, newMessage);
         //TODO: Devolver a resposta de sucesso/erro para o from
+    }
+
+    private Organization? FindByName(string name)
+    {
+        return _states.Select(state => state.Value).Where(state => state.Name == name).SingleOrDefault();
     }
 }
